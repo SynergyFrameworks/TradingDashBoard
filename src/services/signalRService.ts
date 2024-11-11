@@ -1,4 +1,4 @@
-import { HubConnectionBuilder, HubConnection, LogLevel } from '@microsoft/signalr';
+import { HubConnectionBuilder, HubConnection, LogLevel, HttpTransportType } from '@microsoft/signalr';
 import { OptionTrade } from '../types/optionTrade';
 import { store } from '../features/redux/store';
 import { 
@@ -13,17 +13,24 @@ import {
 
 export class SignalRService {
   private connection: HubConnection;
-  private maxRetries = 5;
-  private retryDelay = 5000;
+  private maxRetries = 3;
+  private retryDelay = 3000;
   private reconnectTimeout?: number;;
   private performanceMonitor: PerformanceMonitor;
-  private readonly RECORD_LIMIT = 200;
+  private readonly RECORD_LIMIT = 250;
 
   constructor() {
     this.performanceMonitor = new PerformanceMonitor();
     
     this.connection = new HubConnectionBuilder()
-      .withUrl('http://localhost:5076/tradehub')
+      .withUrl('http://localhost:5076/tradehub', {
+        skipNegotiation: true,
+        transport: HttpTransportType.WebSockets,
+        headers: {
+          // Add any required headers
+        },
+        withCredentials: false 
+      })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
           if (retryContext.previousRetryCount === this.maxRetries) {
@@ -34,7 +41,6 @@ export class SignalRService {
       })
       .configureLogging(LogLevel.Debug)
       .build();
-
     this.setupConnectionHandlers();
   }
 
@@ -58,10 +64,10 @@ export class SignalRService {
             ));
             console.log('Service reset due to record limit');
             
-            // Clear reset status after 3 seconds
+            // Clear reset status after 2 seconds
             setTimeout(() => {
               store.dispatch(clearServiceReset());
-            }, 3000);
+            }, 2000);
           }
           
           store.dispatch(addTrade(normalizedTrade));

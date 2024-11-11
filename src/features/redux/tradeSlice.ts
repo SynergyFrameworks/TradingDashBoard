@@ -42,7 +42,7 @@ const tradesSlice = createSlice({
         resetReason: action.payload,
         lastDisconnected: new Date(),
       };
-      state.isConnected = true; // Keep connected
+      state.isConnected = true;
       state.trades = [];
       state.error = null;
     },
@@ -64,18 +64,11 @@ const tradesSlice = createSlice({
         }
       }
     },
-    setConnectionStatus: (state, action: PayloadAction<boolean>) => {
-      state.isConnected = action.payload;
-      if (!action.payload) {
-        state.connectionStats.status = 'disconnected';
-      }
-    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
     setConnectionStats: (state, action: PayloadAction<ConnectionStats>) => {
       state.connectionStats = action.payload;
-
       state.isConnected = action.payload.status === 'connected';
     },
     setStatistics: (state, action: PayloadAction<TradeStatistics>) => {
@@ -84,7 +77,6 @@ const tradesSlice = createSlice({
     incrementReconnectAttempt: (state) => {
       state.connectionStats.reconnectAttempt += 1;
     },
-
     updateLastConnected: (state) => {
       state.connectionStats = {
         ...state.connectionStats,
@@ -119,7 +111,6 @@ const tradesSlice = createSlice({
 // Export all actions
 export const {
   addTrade,
-  setConnectionStatus,
   setError,
   setConnectionStats,
   setStatistics,
@@ -157,8 +148,6 @@ export const selectFeedPaused = (state: { trades: TradesState }): boolean =>
 export const selectIsReset = (state: { trades: TradesState }): boolean => 
   state.trades.connectionStats.status === 'reset';
 
-
-// Type-safe RootState helper
 export type TradesRootState = {
   trades: TradesState;
 };

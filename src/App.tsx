@@ -7,14 +7,13 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { createTheme } from '@mui/material/styles';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import Home from './pages/Home';
-import Stocks from './pages/Stocks';
 import TradesTable from './components/TradesTable';
 import TradeDetailsPage from 'pages/TradeDetailsPage'
 import Contact from './pages/Contact';
 import AnalyticsDashboard from './components/analytics/AnalyticsDashboard';
 import { SignalRService } from './services/signalRService';
 import { useDispatch, useSelector } from 'react-redux';
-import { setConnectionStatus, setError, incrementReconnectAttempt, updateLastConnected, updateLastDisconnected } from './features/redux/tradeSlice';
+import { setError, incrementReconnectAttempt, updateLastConnected, updateLastDisconnected } from './features/redux/tradeSlice';
 
 const theme = createTheme({
   palette: {

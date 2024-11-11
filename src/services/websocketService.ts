@@ -12,10 +12,11 @@ import {
 } from 'rxjs/operators';
 import { Store } from '@reduxjs/toolkit';
 import { 
-  addTrade, 
-  setConnectionStatus, 
+  addTrade,
   setError,
-  setConnectionStats 
+  setConnectionStats,
+  updateLastConnected,
+  updateLastDisconnected
 } from '../features/redux/tradeSlice';
 
 export class WebSocketService {
@@ -55,7 +56,14 @@ export class WebSocketService {
 
   private setupConnectionStateMonitoring() {
     this.connectionState$.subscribe(state => {
-      this.store.dispatch(setConnectionStatus(state.status === 'connected'));
+      // Update connection state based on status
+      if (state.status === 'connected') {
+        this.store.dispatch(updateLastConnected());
+      } else if (state.status === 'disconnected') {
+        this.store.dispatch(updateLastDisconnected());
+      }
+
+      // Update connection stats
       this.store.dispatch(setConnectionStats({
         reconnectAttempt: state.reconnectAttempt,
         lastConnected: state.lastConnected,
