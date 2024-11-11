@@ -75,10 +75,9 @@ dotnet run
 The service will start on http://localhost:5000 or similar port (check console output)
 
 What to expect:
-
 The service creates a WebSocket endpoint at /tradehub
-When a client connects:
 
+When a client connects:
 Random trades are generated every 100-1000ms
 Each trade is sent to the connected client
 Trades are also sent to symbol-specific groups
@@ -104,11 +103,11 @@ Each attempt to parse resulted in "Incomplete message" errors
 
 SignalR's binary message format expected a specific structure:
 
-Length prefix (4 bytes)
-Message type (4 bytes)
-Actual message content
+*Length prefix (4 bytes)*
+*Message type (4 bytes)*
+*Actual message content*
 
-Our attempts to reconstruct this format from the raw data failed
+Attempts to reconstruct this format from the raw data failed
 The C# to TypeScript translation of complex types was problematic
 
 # SignalR MessagePackHubProtocol Issues
@@ -121,23 +120,23 @@ Binary format headers weren't properly aligned between .NET and TypeScript imple
 
 *Binary Data Handling*
 typescriptCopy// Attempts to handle the binary data included:
-- Direct Uint8Array usage
-- ArrayBuffer conversions
-- Binary message reconstruction
-- Manual header construction
+*Direct Uint8Array usage*
+*ArrayBuffer conversions*
+*Binary message reconstruction*
+*Manual header construction*
 
 # Data Extraction Attempts
 typescriptCopy// Various approaches tried:
-- MessagePack protocol direct parsing
-- Manual binary data extraction
-- Custom binary message formatting
-- TextDecoder for JSON conversion
+*MessagePack protocol direct parsing*
+*Manual binary data extraction*
+*Custom binary message formatting*
+*TextDecoder for JSON conversion*
 
 # Protocol Compatibility
 *MessagePackCompression has two modes, Lz4Block, Lz4BlockArray and None*  11/11/2024
-C# server serialized objects differently than TypeScript expected
-Extension type (98) handling wasn't clear in the TypeScript implementation
-Binary message framing differed between platforms
+*C# server serialized objects differently than TypeScript expected*
+*Extension type (98) handling wasn't clear in the TypeScript implementation*
+*Binary message framing differed between platforms*
 
 
 # Root Cause Analysis
@@ -149,10 +148,10 @@ The fundamental issue appears to be:
 # Solution
 The best temp solution was to:
 
-Remove MessagePack protocol entirely
-Use standard JSON serialization
-Let SignalR handle the serialization/deserialization natively
-Focus on proper type mapping and validation after receiving the data
+*Remove MessagePack protocol entirely*
+*Use standard JSON serialization*
+*Let SignalR handle the serialization/deserialization natively*
+*Focus on proper type mapping and validation after receiving the data*
 
 This simplified approach proved more reliable and maintainable while still maintaining good performance characteristics.
 
